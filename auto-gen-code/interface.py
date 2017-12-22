@@ -20,22 +20,23 @@ class Entity:
                 result.append(entity_obj)
         return result
 
+
+    # return all subentities pathing through the parent entities
     @staticmethod
     def iterate_parents(entity_type):
         api = uxapi()
         if entity_type[0] == "$":
             entity_type = entity_type[1:]
         entity_info = api.get_entity_type(entity_type)
-
+        all_subs = []
         if "parents" in entity_info and entity_info["parents"]:
             parent_type = entity_info["parents"][0]
-            return Entity.iterate_parents(parent_type)
-        result = []
+            all_subs += Entity.iterate_parents(parent_type)
         if "fields" in entity_info and entity_info["fields"]:
             for entity in entity_info["fields"]:
                 entity_obj = Entity(entity)
-                result.append(entity_obj)
-        return result
+                all_subs.append(entity_obj)
+        return all_subs
 
     def is_unit_type(self):
         
@@ -67,22 +68,14 @@ class Entity:
             entity_info = api.get_entity_type(entity_type)
 
             # result += Entity.iterate_parents(self.type)
-            if "parents" in entity_info and entity_info["parents"]:
-                parent_info = api.get_entity_type(entity_info["parents"][0][1:])
-                parent_json = {
-                    "@": parent_info["@"],
-                    "type": "$" + parent_info["type_id"],
-                    "name": "parent",
-                    "description": parent_info["description"] 
-                }
-                if not "fields" in entity_info or not entity_info["fields"]:
-                    entity_info["fields"] = [parent_json]
-                else: 
-                    entity_info["fields"].append(parent_json)
-            if "fields" in entity_info and entity_info["fields"]:
-                for entity in entity_info["fields"]:
-                    entity_obj = Entity(entity)
-                    result.append(entity_obj)
+            
+            result += Entity.iterate_parents(self.type)
+
+
+            # if "fields" in entity_info and entity_info["fields"]:
+            #     for entity in entity_info["fields"]:
+            #         entity_obj = Entity(entity)
+            #         result.append(entity_obj)
             return result
         elif self.is_list():
             self.type = self.type[5:-1]
@@ -150,3 +143,5 @@ class Service:
 
 
 
+# for entity in Entity.iterate_parents("$mst.auth.api_key"):
+#     print entity
