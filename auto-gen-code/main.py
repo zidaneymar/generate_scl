@@ -1,2 +1,0 @@
-
-print("SET param = msd_bnoabotletdev_dictionary_input\r\nSET param[\"word\"] = \"amazing\"\r\nCALL \"msd.bnoabotletdev.dictionary.service\", \"search\", param = param\r\nSAY CALL_RESULT\r\n\r\n\r\nDATA\r\n\r\nmsd_bnoabotletdev_dictionary_input:\r\n    \"@\": \"msd.bnoabotletdev.dictionary.input\"\r\n    word: amazing\r\n\r\n\r\n")
